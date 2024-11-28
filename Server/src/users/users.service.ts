@@ -1,27 +1,30 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, DataSource } from 'typeorm';
 import { Users } from '../entities/Users.entity';
+import bcrypt from 'bcrypt';
+
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(Users)
-    private userRepository: Repository<Users>,
+    private usersRepository: Repository<Users>,
+    private dataSource: DataSource,
   ) {}
-
-  findAll(): Promise<Users[]> {
-    return this.userRepository.find();
+  //회원가입하기
+  async registerUser(
+    email: string,
+    password: string,
+    name: string,
+  ): Promise<Users> {
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const user = this.usersRepository.create({
+      email,
+      password: hashedPassword,
+      name,
+    });
+    return await this.usersRepository.save(user);
   }
 
-  findOne(id: number): Promise<Users> {
-    return this.userRepository.findOneBy({ id });
-  }
-
-  async create(user: Users): Promise<Users> {
-    return this.userRepository.save(user);
-  }
-
-  async remove(id: number): Promise<void> {
-    await this.userRepository.delete(id);
-  }
+  //로그인하기
 }

@@ -7,7 +7,8 @@ import bcrypt from 'bcrypt';
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectRepository(Users) private usersRepository: Repository<Users>,
+    @InjectRepository(Users)
+    private usersRepository: Repository<Users>,
   ) {}
 
   async validateUser(email: string, password: string) {
@@ -22,7 +23,7 @@ export class AuthService {
     }
     const result = await bcrypt.compare(password, user.password);
     if (result) {
-      const { password, ...userWithoutPassword } = user;
+      const { ...userWithoutPassword } = user;
       return userWithoutPassword;
     }
     return null;

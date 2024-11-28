@@ -18,7 +18,6 @@ import { AuthModule } from './auth/auth.module';
       isGlobal: true,
       envFilePath: '.env',
     }),
-    UsersModule,
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
       imports: [ConfigModule],
