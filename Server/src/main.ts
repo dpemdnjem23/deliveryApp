@@ -6,7 +6,6 @@ declare const module: any;
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  console.log(process.env.PORT);
   const config = new DocumentBuilder()
     .setTitle('Delivery')
     .setDescription('The Delivery API description')

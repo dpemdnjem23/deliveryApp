@@ -1,6 +1,5 @@
 import { ExecutionContext, Injectable } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { Observable } from 'rxjs';
 
 @Injectable()
 export class LocalAuthGuard extends AuthGuard('local') {
@@ -8,7 +7,7 @@ export class LocalAuthGuard extends AuthGuard('local') {
     const can = await super.canActivate(context);
     if (can) {
       const request = context.switchToHttp().getRequest();
-      console.log('login for cookie');
+      console.debug('login for cookie');
       await super.logIn(request);
     }
     return true;

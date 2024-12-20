@@ -15,7 +15,7 @@ export class LocalSerializer extends PassportSerializer {
   }
 
   serializeUser(user: Users, done: CallableFunction) {
-    console.log(user);
+    console.debug(user);
     done(null, user.id);
   }
   async deserializeUser(userId: string, done: CallableFunction) {
@@ -25,7 +25,7 @@ export class LocalSerializer extends PassportSerializer {
         select: ['id', 'nickname', 'email'],
       })
       .then((user) => {
-        console.log('user', user);
+        console.debug('user', user);
         done(null, user);
       })
       .catch((error) => {

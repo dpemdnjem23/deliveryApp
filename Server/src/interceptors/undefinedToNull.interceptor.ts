@@ -13,7 +13,7 @@ export class UndefinedToNullInterceptor implements NestInterceptor {
     next: CallHandler<any>,
   ): Observable<any> | Promise<Observable<any>> {
     //controller 전 부분
-    console.log('Before...');
+    console.debug('Before...');
 
     return next
       .handle()

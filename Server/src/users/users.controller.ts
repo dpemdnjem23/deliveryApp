@@ -46,6 +46,7 @@ export class UsersController {
   // @Controller('api/Signin')
   @ApiOperation({ summary: '로그인' })
   @UseGuards(LocalAuthGuard)
+  @Post('signin')
   async login(@Body() user: Users) {
     return user;
   }
