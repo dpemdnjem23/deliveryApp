@@ -18,7 +18,7 @@ export class AuthService {
       where: { email },
       select: ['id', 'email', 'password'],
     });
-    console.debug(email, password, user);
+    console.log(email, password, user);
 
     if (!user) {
       return null;

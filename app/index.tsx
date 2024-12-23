@@ -9,15 +9,18 @@ import {
   View,
 } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
+import Constants from 'expo-constants';
 
 import EncryptedStorage from 'react-native-encrypted-storage';
 import axios, {AxiosError} from 'axios';
 import {useRouter} from 'expo-router';
-import {useAppDispatch} from '@/app/(store)';
+import {useAppDispatch} from './(store)';
 import userSlice from './(slices)/user';
 import DismissKeyboardView from './components/DismissKeyboardView';
 
 function SignIn() {
+  const API_URL = Constants.manifest2?.extra?.API_URL;
+
   const router = useRouter();
   const dispatch = useAppDispatch();
   const [loading, setLoading] = useState(false);
@@ -44,14 +47,16 @@ function SignIn() {
     }
     try {
       setLoading(true);
+      console.log(process.env.EXPO_PUBLIC_API_URL, API_URL);
       const response = await axios.post(
-        `${process.env.EXPO_PUBLIC_API_URL}api/users/signin`,
+        `${process.env.EXPO_PUBLIC_API_URL}/api/users/signin`,
         {
           email,
           password,
         },
       );
-      console.debug(response.data);
+
+      console.log(response.data, response.status);
       Alert.alert('알림', '로그인 되었습니다.');
       dispatch(
         userSlice.actions.setUser({
@@ -66,13 +71,13 @@ function SignIn() {
         response.data.data.refreshToken,
       );
     } catch (error) {
-      const errorResponse = (error as AxiosError).response;
+      const errorResponse = error as AxiosError;
+      console.log(errorResponse);
       if (errorResponse) {
         Alert.alert('알림', errorResponse.data.message);
       }
     } finally {
       setLoading(false);
-      router.push('/Home');
     }
   }, [loading, dispatch, email, password]);
 

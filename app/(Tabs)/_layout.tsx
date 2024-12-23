@@ -35,3 +35,57 @@
 
 //   );
 // }
+import FontAwesome from '@expo/vector-icons/FontAwesome';
+import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
+
+import {Tabs, Stack} from 'expo-router';
+
+export default function TabLayout() {
+  return (
+    <Tabs screenOptions={{tabBarActiveTintColor: 'blue'}}>
+      <Tabs.Screen
+        name="Home"
+        options={{
+          title: 'Home',
+          headerShown: false,
+
+          tabBarIcon: ({color}) => (
+            <FontAwesome size={28} name="home" color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="Orders"
+        options={{
+          title: 'Orders',
+          headerShown: false,
+
+          tabBarIcon: ({color}) => (
+            <FontAwesome6 size={28} name="receipt" color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="Delivery"
+        options={{
+          title: 'Delivery',
+          headerShown: false,
+          tabBarIcon: ({color}) => (
+            <FontAwesome size={28} name="rocket" color={color} />
+          ),
+        }}
+      />
+
+      <Tabs.Screen
+        name="Settings"
+        options={{
+          title: 'Settings',
+          headerShown: false,
+          tabBarIcon: ({color}) => (
+            <FontAwesome size={28} name="cog" color={color} />
+          ),
+        }}
+      />
+    </Tabs>
+  );
+}

@@ -11,13 +11,21 @@
     "outDir": "./dist",
     "baseUrl": "./",
     "incremental": true,
+
     "skipLibCheck": true,
     "strictNullChecks": false,
+    "moduleResolution": "node",
+
     "noImplicitAny": false,
     "strictBindCallApply": false,
+    "esModuleInterop": true,
     "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false
+    "noFallthroughCasesInSwitch": false,
+    "paths": {
+      "src/*": ["./src/*"]
+    }
   },
+  "exclude": ["node_modules", "dist"],
 
-  "include": ["src/**/*", "src/auth"]
+  "include": ["src/**/*", "src/auth", "data-source.ts"]
 }

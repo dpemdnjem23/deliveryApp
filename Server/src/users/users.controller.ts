@@ -1,8 +1,6 @@
 import {
   Controller,
   Post,
-  Req,
-  Res,
   UseInterceptors,
   Get,
   UseGuards,
@@ -26,7 +24,7 @@ import { Users } from 'src/entities/Users.entity';
 import { LocalAuthGuard } from 'src/auth/local-auth.guard';
 @UseInterceptors(UndefinedToNullInterceptor)
 @ApiTags('USER')
-@Controller('api/users')
+@Controller('/api/users')
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
@@ -48,6 +46,7 @@ export class UsersController {
   @UseGuards(LocalAuthGuard)
   @Post('signin')
   async login(@Body() user: Users) {
+    console.log(user);
     return user;
   }
   @ApiOperation({ summary: '회원가입' })

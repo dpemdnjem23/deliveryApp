@@ -46,7 +46,7 @@ import { AuthModule } from './auth/auth.module';
 export class AppModule {
   async onApplicationBootstrap() {
     try {
-      console.debug('Database connection established successfully.');
+      console.log('Database connection established successfully.');
     } catch (error) {
       console.error('Failed to connect to the database:', error.message);
     }

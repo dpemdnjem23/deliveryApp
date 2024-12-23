@@ -1,5 +1,6 @@
-// data-source.ts
-import { DataSource } from 'typeorm';
+import { DataSource, DataSourceOptions } from 'typeorm';
+import { SeederOptions } from 'typeorm-extension';
+
 import { ConfigService } from '@nestjs/config';
 import * as dotenv from 'dotenv';
 
@@ -16,6 +17,7 @@ const dataSource = new DataSource({
   database: configService.get<string>('DATABASE_NAME'),
   entities: [__dirname + 'src/**/*.entity.{ts,js}'],
   migrations: [__dirname + '/src/migrations/*.ts'],
+  seeds: ['src/databases/seeds/**/*.ts'], // 시드 파일 경로
   synchronize: true,
-});
+} as DataSourceOptions & SeederOptions);
 export default dataSource;
