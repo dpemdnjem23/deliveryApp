@@ -1,12 +1,14 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
+    "module": "CommonJS",
+    "rootDir": "./",
     "declaration": true,
     "removeComments": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
     "target": "ES2021",
+    // "rootDir": "./src",
     "sourceMap": true,
     "outDir": "./dist",
     "baseUrl": "./",
@@ -17,6 +19,7 @@
     "moduleResolution": "node",
 
     "noImplicitAny": false,
+
     "strictBindCallApply": false,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": false,
@@ -25,7 +28,7 @@
       "src/*": ["./src/*"]
     }
   },
-  "exclude": ["node_modules", "dist"],
+  "exclude": ["node_modules", "dist", "build"],
 
-  "include": ["src/**/*", "src/auth", "data-source.ts"]
+  "include": ["src/**/*.ts"]
 }

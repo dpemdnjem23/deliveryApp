@@ -5,8 +5,10 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
   DeleteDateColumn,
+  Index,
 } from 'typeorm';
 
+// @Index('email', ['email'], { unique: true })
 @Entity({
   name: 'users',
   schema: 'delivery',

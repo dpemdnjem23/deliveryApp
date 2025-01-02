@@ -19,6 +19,7 @@ import { AuthModule } from './auth/auth.module';
     }),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
+
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
@@ -27,12 +28,11 @@ import { AuthModule } from './auth/auth.module';
         database: configService.get<string>('DATABASE_NAME'),
         username: configService.get<string>('DATABASE_USER'),
         password: configService.get<string>('DATABASE_PASSWORD'),
-        // autoLoadEntities: true,
-        // keepConnectionAlive: true,
         entities: [__dirname + '/**/*.entity.{ts,js}'],
 
         migrations: [__dirname + '/migrations/*.ts'],
-        synchronize: false,
+        autoLoadEntities: true,
+        synchronize: true,
         logging: true,
         timezone: 'local',
       }),
