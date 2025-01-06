@@ -12,6 +12,7 @@ export class UsersService {
     private usersRepository: Repository<Users>,
     private dataSource: DataSource,
   ) {}
+
   //회원가입하기
   async registerUser(
     email: string,
@@ -27,7 +28,11 @@ export class UsersService {
     return await this.usersRepository.save(user);
   }
   async findUserByEmail(email: string): Promise<Users | undefined> {
-    return await this.usersRepository.findOne({ where: { email } });
+    console.log(email);
+    return await this.usersRepository.findOne({
+      where: { email },
+      select: ['id', 'email', 'password'],
+    });
   }
 
   //로그인하기

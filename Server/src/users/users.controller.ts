@@ -22,9 +22,10 @@ import { JoinRequestDto } from './dto/join.request.dto';
 import { NotLoggedInGuard } from '../auth/not-logged-in.guard';
 import { Users } from 'src/entities/Users.entity';
 import { LocalAuthGuard } from 'src/auth/local-auth.guard';
+import { AuthGuard } from '@nestjs/passport';
 @UseInterceptors(UndefinedToNullInterceptor)
 @ApiTags('USER')
-@Controller('/api/users')
+@Controller('api/users')
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
@@ -37,6 +38,7 @@ export class UsersController {
   @ApiOperation({ summary: '내 정보 조회' })
   @Get()
   async getUser(@User() user: Users) {
+    console.log(user);
     return user || false;
   }
 
@@ -45,8 +47,8 @@ export class UsersController {
   @ApiOperation({ summary: '로그인' })
   @UseGuards(LocalAuthGuard)
   @Post('signin')
-  async login(@Body() user: Users) {
-    console.log(user);
+  async login(@User() user: Users) {
+    console.log(user, '확인용');
     return user;
   }
   @ApiOperation({ summary: '회원가입' })

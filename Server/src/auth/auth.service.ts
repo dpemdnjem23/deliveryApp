@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Users } from 'src/entities/Users.entity';
 import { Repository } from 'typeorm';
@@ -14,14 +14,15 @@ export class AuthService {
   ) {}
 
   async validateUser(email: string, password: string): Promise<any> {
+    console.log(email);
     const user = await this.usersRepository.findOne({
       where: { email },
-      select: ['id', 'email', 'password'],
+      select: ['id', 'email', 'password', 'nickname'],
     });
     console.log(email, password, user);
-
     if (!user) {
-      return null;
+      console.error('User not found or invalid credentials');
+      throw new UnauthorizedException('Invalid username or password');
     }
 
     const result = await bcrypt.compare(password, user.password);
@@ -29,6 +30,6 @@ export class AuthService {
       const { ...userWithoutPassword } = user;
       return userWithoutPassword;
     }
-    return null;
+    return user;
   }
 }
