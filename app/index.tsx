@@ -7,6 +7,7 @@ import {
   Text,
   TextInput,
   View,
+  Platform,
 } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import Constants from 'expo-constants';
@@ -47,9 +48,18 @@ function SignIn() {
     }
     try {
       setLoading(true);
-      console.log(process.env.EXPO_PUBLIC_API_URL, API_URL);
+      console.log(
+        Platform.OS !== 'web'
+          ? process.env.EXPO_PUBLIC_API_URL
+          : process.env.EXPO_PUBLIC_WEB_API_URL,
+        API_URL,
+      );
       const response = await axios.post(
-        `${process.env.EXPO_PUBLIC_API_URL}/api/users/signin`,
+        `${
+          Platform.OS !== 'web'
+            ? process.env.EXPO_PUBLIC_API_URL
+            : process.env.EXPO_PUBLIC_WEB_API_URL
+        }/api/users/signin`,
         {
           email,
           password,
@@ -71,10 +81,10 @@ function SignIn() {
         response.data.data.refreshToken,
       );
     } catch (error) {
-      const errorResponse = error as AxiosError;
-      console.log(errorResponse);
+      const errorResponse = error as AxiosError<unknown, any>;
+      console.debug(errorResponse);
       if (errorResponse) {
-        Alert.alert('알림', errorResponse.data.message);
+        Alert.alert('알림', errorResponse.message.toString());
       }
     } finally {
       setLoading(false);

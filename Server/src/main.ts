@@ -1,5 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import cookieParser from 'cookie-parser';
 
 import { AppModule } from './app.module';
 declare const module: any;
@@ -19,6 +20,7 @@ async function bootstrap() {
     module.hot.accept();
     module.hot.dispose(() => app.close());
   }
+  app.use(cookieParser()); // 쿠키 파서 미들웨어 추가
 
   await app.listen(process.env.PORT ?? 3000);
 }

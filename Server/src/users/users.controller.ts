@@ -19,15 +19,15 @@ import { UndefinedToNullInterceptor } from 'src/interceptors/undefinedToNull.int
 import { UserDto } from '../common/dto/user.dto';
 import { User } from 'src/common/decorators/user.decorator';
 import { JoinRequestDto } from './dto/join.request.dto';
-import { NotLoggedInGuard } from '../auth/not-logged-in.guard';
+import { NotLoggedInGuard } from '../auth/guards/not-logged-in.guard';
 import { Users } from 'src/entities/Users.entity';
-import { LocalAuthGuard } from 'src/auth/local-auth.guard';
+import { LocalAuthGuard } from 'src/auth/guards/local-auth.guard';
 import { AuthGuard } from '@nestjs/passport';
 @UseInterceptors(UndefinedToNullInterceptor)
 @ApiTags('USER')
 @Controller('api/users')
 export class UsersController {
-  constructor(private usersService: UsersService) {}
+  constructor(private userService: UsersService) {}
 
   @ApiResponse({
     type: UserDto,
@@ -48,19 +48,21 @@ export class UsersController {
   @UseGuards(LocalAuthGuard)
   @Post('signin')
   async login(@User() user: Users) {
-    console.log(user, '확인용');
-    return user;
+    const data = await this.userService.signIn(user);
+
+    console.log(data, 'data');
+    return data;
   }
   @ApiOperation({ summary: '회원가입' })
   @UseGuards(NotLoggedInGuard)
   @Post('signup')
   async register(@Body() body: JoinRequestDto) {
-    const existingUser = await this.usersService.findUserByEmail(body.email);
+    const existingUser = await this.userService.findUserByEmail(body.email);
 
     if (existingUser) {
       throw new BadRequestException('Email already in use');
     }
-    const result = await this.usersService.registerUser(
+    const result = await this.userService.registerUser(
       body.email,
       body.nickname,
       body.password,
