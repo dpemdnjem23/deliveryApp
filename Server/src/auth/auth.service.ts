@@ -17,50 +17,54 @@ export class AuthService {
   ) {}
 
   generateAccessToken(payload: object): string {
-    return this.jwtService.sign(payload, { expiresIn: '15m' }); // 15분 유효기간
+    return this.jwtService.sign({ payload }, { expiresIn: '15m' }); // 15분 유효기간
   }
 
   // RefreshToken 생성
   generateRefreshToken(payload: object): string {
-    return this.jwtService.sign(payload, { expiresIn: '7d' }); // 7일 유효기간
+    return this.jwtService.sign({ payload }, { expiresIn: '7d' }); // 7일 유효기간
   }
 
-  verifyRefreshToken(token: string): any {
+  verifyToken(token: string): any {
     return this.jwtService.verify(token, {
       secret: process.env.JWT_SECRET || 'yourSecretKey',
     });
   }
+  //아직 로그인하기 전,
 
-  async tokenValidateUser(payload) {
-    const { email } = payload;
-    const user: Users = await this.userRepository.findOne({
-      select: ['id', 'nickname', 'email', 'password'],
-      where: { email },
-    });
+  // async tokenValidateUser(payload) {
+  //   const { email } = payload;
+  //   const user: Users = await this.userRepository.findOne({
+  //     select: ['id', 'nickname', 'email', 'password'],
+  //     where: { email },
+  //   });
 
-    if (!user) {
-      throw new UnauthorizedException();
-    }
-    return user;
-  }
+  //   if (!user) {
+  //     throw new UnauthorizedException();
+  //   }
+  //   return user;
+  // }
 
   async validateUser(email: string, password: string): Promise<any> {
-    console.log(email);
+    //validateUser emial password가 들어오면
+    //password를 bcrypt화 해서 보여준다.
     const user = await this.userRepository.findOne({
       where: { email },
       select: ['id', 'email', 'password', 'nickname'],
     });
-    console.log(email, password, user);
-    if (!user) {
-      console.error('User not found or invalid credentials');
-      throw new UnauthorizedException('Invalid username or password');
-    }
+    //emaill 자체가 존재x
 
-    const result = await bcrypt.compare(password, user.password);
-    if (result) {
-      const { ...userWithoutPassword } = user;
-      return userWithoutPassword;
+    //비밀번호 일치 확인
+    //암호화를하고.
+    const hashedPassword = await bcrypt.hash(password, 10);
+    //암호화 한거와 저장돼있는 비밀번호 비교
+    const isPasswordValid = await bcrypt.compare(user.password, hashedPassword);
+
+    if (!user || !isPasswordValid) {
+      return new UnauthorizedException('Invalid password or email');
     }
-    return user;
+    //여기서 이메일 인증 + 비밀번호 인증까지 한다.
+
+    return { id: user.id, email: user.email, nickname: user.nickname };
   }
 }

@@ -1,24 +1,28 @@
-import { ExecutionContext, Injectable } from '@nestjs/common';
+import {
+  ExecutionContext,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { AuthService } from 'src/auth/auth.service';
+
+//기본 인증만하는경우는 {} 공백으로둬도되지만,
+//인중후 추가작업들이 들어가는경우는  canActivate이후로 추가로 들어가줘야한다.
+//로그인후
 
 @Injectable()
 export class LocalAuthGuard extends AuthGuard('local') {
-  async canActivate(context: ExecutionContext): Promise<boolean> {
-    console.log('Guard 실행 시작');
+  constructor(private authService: AuthService) {
+    super();
+  }
+  //guard에서 validate로 인증하기 인증이 끝나면 controller에서 auth
 
-    const request = context.switchToHttp().getRequest();
-    console.log('Request Body:', request.body);
-    try {
-      const can = await super.canActivate(context);
-      console.log(can);
-      return true;
-      // if (can) {
-      //   const request = context.switchToHttp().getRequest();
-      //   console.log('login for cookie');
-      //   await super.logIn(request);
-    } catch (error) {
-      console.error('canActivate 에러:', error);
-      throw error;
+  async validate(username: string, password: string): Promise<any> {
+    const user = await this.authService.validateUser(username, password);
+    if (!user) {
+      throw new UnauthorizedException();
     }
+    console.log(user);
+    return user;
   }
 }

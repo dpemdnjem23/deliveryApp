@@ -20,12 +20,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   //토큰을 생성, 검증
-  async validate(payload: JwtPayload): Promise<any> {
-    const user = await this.authService.tokenValidateUser(payload);
-    if (!user) {
-      return new UnauthorizedException({ message: 'user does not exist' });
-    }
+  // async validate(payload: JwtPayload): Promise<any> {
+  //   const user = await this.authService.tokenValidateUser(payload);
+  //   if (!user) {
+  //     return new UnauthorizedException({ message: 'user does not exist' });
+  //   }
 
-    return { email: user.email, nickname: user.nickname };
-  }
+  //   return { email: user.email, nickname: user.nickname };
+  // }
 }

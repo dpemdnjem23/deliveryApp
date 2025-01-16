@@ -1,12 +1,14 @@
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import cookieParser from 'cookie-parser';
+import cookieParser from 'cookie-parser'; // ES6 방식 import
 
 import { AppModule } from './app.module';
 declare const module: any;
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.use(cookieParser()); // 쿠키 파서 미들웨어 추가
+
   const config = new DocumentBuilder()
     .setTitle('Delivery')
     .setDescription('The Delivery API description')
@@ -20,7 +22,6 @@ async function bootstrap() {
     module.hot.accept();
     module.hot.dispose(() => app.close());
   }
-  app.use(cookieParser()); // 쿠키 파서 미들웨어 추가
 
   await app.listen(process.env.PORT ?? 3000);
 }

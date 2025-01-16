@@ -8,22 +8,16 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
   constructor(private authService: AuthService) {
     super({ usernameField: 'email', passwordField: 'password' });
   }
-
+  //여기서 인증 절차를 거쳐야한다.
   async validate(email: string, password: string): Promise<any> {
     console.log(email, password, '이메일 패스워드0');
 
     const user = await this.authService.validateUser(email, password);
 
-    // if (!user) {
-    //   throw new UnauthorizedException();
-    // }
-    console.log(user, 'user,sdjfoisajfioeiof');
-
     if (!user) {
-      console.error('사용자 찾을 수 없음:');
-      return null;
+      throw new UnauthorizedException();
     }
-    console.log('인증성고');
+    // console.log(user, 'user,sdjfoisajfioeiof');
     return user;
   }
 }

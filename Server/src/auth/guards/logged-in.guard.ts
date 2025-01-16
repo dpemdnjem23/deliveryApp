@@ -7,7 +7,10 @@ export class LoggedInGuard implements CanActivate {
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
     console.log('logged');
+
     const request = context.switchToHttp().getRequest();
+
+    console.log(request.isAuthenticated());
     return request.isAuthenticated(); //request.isAuthenticated()는 요청 객체에 연결된 메서드로, 사용자가 인증되었는지 확인합니다.
     //passport.js에서
   }

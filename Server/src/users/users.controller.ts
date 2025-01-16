@@ -7,6 +7,8 @@ import {
   Body,
   BadRequestException,
   ForbiddenException,
+  Res,
+  Request,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import {
@@ -23,6 +25,10 @@ import { NotLoggedInGuard } from '../auth/guards/not-logged-in.guard';
 import { Users } from 'src/entities/Users.entity';
 import { LocalAuthGuard } from 'src/auth/guards/local-auth.guard';
 import { AuthGuard } from '@nestjs/passport';
+import { LoggedInGuard } from 'src/auth/guards/logged-in.guard';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { Response } from 'express';
+import { AuthService } from 'src/auth/auth.service';
 @UseInterceptors(UndefinedToNullInterceptor)
 @ApiTags('USER')
 @Controller('api/users')
@@ -43,16 +49,18 @@ export class UsersController {
   }
 
   //로그인 하는 경우 jwtToken을 생성해서 넘겨줘야하ㅏㄴㄷ.
-  // @Controller('api/Signin')
   @ApiOperation({ summary: '로그인' })
+  // @UseGuards(LoggedInGuard)
   @UseGuards(LocalAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @Post('signin')
-  async login(@User() user: Users) {
-    const data = await this.userService.signIn(user);
-
-    console.log(data, 'data');
-    return data;
+  async login(@Request() req: any, @Res() res: any) {
+    console.log(req.user);
+    const user = await this.userService.signIn(req.user, res);
+    console.log(user, 'signuser');
+    return user;
   }
+
   @ApiOperation({ summary: '회원가입' })
   @UseGuards(NotLoggedInGuard)
   @Post('signup')

@@ -11,6 +11,9 @@ import { LoggerMiddleware } from './middlewares/logger.middleware';
 import { AuthService } from './auth/auth.service';
 import { AuthModule } from './auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
+import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
+import { APP_GUARD } from '@nestjs/core';
+import { UsersService } from './users/users.service';
 
 @Module({
   imports: [
@@ -46,7 +49,12 @@ import { JwtModule } from '@nestjs/jwt';
     AuthModule,
   ],
   controllers: [AppController],
-  providers: [AppService, AuthService],
+  providers: [
+    AppService,
+    UsersService,
+    AuthService,
+    // { provide: APP_GUARD, useClass: JwtAuthGuard },
+  ],
 })
 export class AppModule {
   async onApplicationBootstrap() {

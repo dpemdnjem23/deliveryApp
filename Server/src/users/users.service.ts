@@ -1,11 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DataSource } from 'typeorm';
+import { Response } from 'express';
 
 import bcrypt from 'bcrypt';
 import { Users } from '../entities/Users.entity';
 import { JwtService } from '@nestjs/jwt';
-import { JwtPayload } from 'src/auth/dto/jwt-payload.interface';
 import { AuthService } from 'src/auth/auth.service';
 @Injectable()
 export class UsersService {
@@ -40,27 +40,40 @@ export class UsersService {
     });
   }
 
-  //로그인하기 유저를 찾고, jwt 생성하고 내보낸다.
+  //로그인하기 유저를 찾고, jwt 생성, cookie 생성
 
-  async signIn(payload: any) {
-    const { email } = payload;
-    const user = await this.userRepository.findOne({
-      select: ['email', 'nickname', 'password'],
-      where: { email },
+  async signIn(payload: any, res: Response) {
+    //비밀번호 ,이메일 인증이완료된후, 들어온 데이터들 accesstoken은 내보내고 refresh는 cookie
+    console.log(payload, 'payload');
+    const { email, nickname, id } = payload;
+
+    //암호화된 비밀번호가 들어온다.
+
+    //hahspassword 가 된 상태에서, 해석을해서 일치한지 확인.
+    const accessToken = this.authService.generateAccessToken(payload);
+    const refreshToken = this.authService.generateRefreshToken(payload);
+
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true, // 클라이언트에서 접근 불가
+      secure: true, // HTTPS 환경에서만 전송
+      // sameSite:, // CSRF 방지
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 쿠키 유효기간: 7일
     });
-    const hashedPassword = await bcrypt.hash(user.password, 10);
 
-    if (user && hashedPassword) {
-      const payload: JwtPayload = { email };
-      const accessToken = this.authService.generateAccessToken(payload);
+    // res.cookie('refreshToken', refreshToken, {
+    //   httpOnly: true, // 클라이언트에서 접근 불가
+    //   secure: true, // HTTPS 환경에서만 전송
+    //   // sameSite:, // CSRF 방지
+    //   maxAge: 7 * 24 * 60 * 60 * 1000, // 쿠키 유효기간: 7일
+    // });
 
-      return {
-        data: {
-          email: user.email,
-          nickname: user.nickname,
-        },
-        accessToken: accessToken,
-      };
-    }
+    return {
+      data: {
+        id,
+        email: email,
+        nickname: nickname,
+      },
+      accessToken: accessToken,
+    };
   }
 }
