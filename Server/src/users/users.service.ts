@@ -42,9 +42,11 @@ export class UsersService {
 
   //로그인하기 유저를 찾고, jwt 생성, cookie 생성
 
-  async signIn(payload: any, res: Response) {
+  async signIn(payload: any, res: any) {
+    if (!payload) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
     //비밀번호 ,이메일 인증이완료된후, 들어온 데이터들 accesstoken은 내보내고 refresh는 cookie
-    console.log(payload, 'payload');
     const { email, nickname, id } = payload;
 
     //암호화된 비밀번호가 들어온다.
@@ -55,25 +57,17 @@ export class UsersService {
 
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true, // 클라이언트에서 접근 불가
-      secure: true, // HTTPS 환경에서만 전송
-      // sameSite:, // CSRF 방지
+      secure: false, // HTTPS 환경에서만 전송
+      sameSite: 'lax', // CSRF 방지
       maxAge: 7 * 24 * 60 * 60 * 1000, // 쿠키 유효기간: 7일
     });
-
-    // res.cookie('refreshToken', refreshToken, {
-    //   httpOnly: true, // 클라이언트에서 접근 불가
-    //   secure: true, // HTTPS 환경에서만 전송
-    //   // sameSite:, // CSRF 방지
-    //   maxAge: 7 * 24 * 60 * 60 * 1000, // 쿠키 유효기간: 7일
-    // });
-
-    return {
+    return res.status(200).json({
       data: {
         id,
         email: email,
         nickname: nickname,
       },
       accessToken: accessToken,
-    };
+    });
   }
 }

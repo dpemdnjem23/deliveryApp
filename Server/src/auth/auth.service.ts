@@ -63,6 +63,7 @@ export class AuthService {
     if (!user || !isPasswordValid) {
       return new UnauthorizedException('Invalid password or email');
     }
+    console.log('auth service 통과');
     //여기서 이메일 인증 + 비밀번호 인증까지 한다.
 
     return { id: user.id, email: user.email, nickname: user.nickname };

@@ -19,10 +19,10 @@ export class LocalAuthGuard extends AuthGuard('local') {
 
   async validate(username: string, password: string): Promise<any> {
     const user = await this.authService.validateUser(username, password);
+    console.log('authguard', user);
     if (!user) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException(); // 인증 실패
     }
-    console.log(user);
-    return user;
+    return user; // 성공 시 사용자 객체 반환
   }
 }

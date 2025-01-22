@@ -12,6 +12,7 @@ export interface Payload {
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(private authService: AuthService) {
+    console.log(process.env.JWT_SECRET);
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
@@ -20,12 +21,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   //토큰을 생성, 검증
-  // async validate(payload: JwtPayload): Promise<any> {
-  //   const user = await this.authService.tokenValidateUser(payload);
-  //   if (!user) {
-  //     return new UnauthorizedException({ message: 'user does not exist' });
-  //   }
-
-  //   return { email: user.email, nickname: user.nickname };
-  // }
+  async validate(payload: any) {
+    console.log(payload);
+    // payload는 디코딩된 JWT 내용
+    return { email: payload.email }; // req.user에 저장
+  }
 }

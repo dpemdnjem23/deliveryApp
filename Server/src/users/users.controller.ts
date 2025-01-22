@@ -40,12 +40,13 @@ export class UsersController {
     status: 200,
     description: '성공',
   })
+  // @UseGuards(JwtAuthGuard)
   @ApiCookieAuth('connect.sid')
   @ApiOperation({ summary: '내 정보 조회' })
   @Get()
-  async getUser(@User() user: Users) {
-    console.log(user);
-    return user || false;
+  async getUser(@Request() req: any) {
+    console.log(req);
+    return { message: 'This is protected data', user: req.user };
   }
 
   //로그인 하는 경우 jwtToken을 생성해서 넘겨줘야하ㅏㄴㄷ.
@@ -55,9 +56,8 @@ export class UsersController {
   // @UseGuards(JwtAuthGuard)
   @Post('signin')
   async login(@Request() req: any, @Res() res: any) {
-    console.log(req.user);
     const user = await this.userService.signIn(req.user, res);
-    console.log(user, 'signuser');
+
     return user;
   }
 

@@ -40,7 +40,7 @@ import { UsersService } from './users/users.service';
 
         migrations: [__dirname + '/migrations/*.ts'],
         autoLoadEntities: true,
-        synchronize: true,
+        synchronize: false,
         logging: true,
         timezone: 'local',
       }),
