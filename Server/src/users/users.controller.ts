@@ -33,20 +33,24 @@ import { AuthService } from 'src/auth/auth.service';
 @ApiTags('USER')
 @Controller('api/users')
 export class UsersController {
-  constructor(private userService: UsersService) {}
+  constructor(
+    private userService: UsersService,
+    private authService: AuthService,
+  ) {}
 
   @ApiResponse({
     type: UserDto,
     status: 200,
     description: '성공',
   })
-  // @UseGuards(JwtAuthGuard)
   @ApiCookieAuth('connect.sid')
   @ApiOperation({ summary: '내 정보 조회' })
+  @UseGuards(JwtAuthGuard)
   @Get()
-  async getUser(@Request() req: any) {
-    console.log(req);
-    return { message: 'This is protected data', user: req.user };
+  async getUser(@Request() req: any, @Res() res: any, @User() data: any) {
+    // const s = this.userService.findUserByEmail();
+
+    return { message: 'This is protected data' };
   }
 
   //로그인 하는 경우 jwtToken을 생성해서 넘겨줘야하ㅏㄴㄷ.
@@ -55,10 +59,18 @@ export class UsersController {
   @UseGuards(LocalAuthGuard)
   // @UseGuards(JwtAuthGuard)
   @Post('signin')
-  async login(@Request() req: any, @Res() res: any) {
-    const user = await this.userService.signIn(req.user, res);
+  async login(@User() user: any, @Res({ passthrough: true }) res: Response) {
+    const data = await this.userService.signIn(user, res);
+    const refreshToken = this.authService.generateRefreshToken(user);
 
-    return user;
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true, // 클라이언트에서 접근 불가
+      secure: false, // HTTPS 환경에서만 전송
+      sameSite: 'lax', // CSRF 방지
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 쿠키 유효기간: 7일
+    });
+    console.log(data, 'data');
+    return data;
   }
 
   @ApiOperation({ summary: '회원가입' })

@@ -8,17 +8,20 @@ import { LocalAuthGuard } from './guards/local-auth.guard';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { JwtModule } from '@nestjs/jwt';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Users]),
     PassportModule,
     JwtModule.register({
-      secret: process.env.JWT_SECRET || 'defaultSecret',
-      signOptions: { expiresIn: '1h' },
+      secret: 'topSecret92',
+      signOptions: {
+        expiresIn: 3600,
+      },
     }),
   ],
   providers: [AuthService, LocalStrategy, JwtStrategy],
-  exports: [TypeOrmModule],
+  exports: [TypeOrmModule, JwtModule],
 })
 export class AuthModule {}

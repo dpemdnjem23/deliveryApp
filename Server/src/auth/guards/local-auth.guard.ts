@@ -11,18 +11,4 @@ import { AuthService } from 'src/auth/auth.service';
 //로그인후
 
 @Injectable()
-export class LocalAuthGuard extends AuthGuard('local') {
-  constructor(private authService: AuthService) {
-    super();
-  }
-  //guard에서 validate로 인증하기 인증이 끝나면 controller에서 auth
-
-  async validate(username: string, password: string): Promise<any> {
-    const user = await this.authService.validateUser(username, password);
-    console.log('authguard', user);
-    if (!user) {
-      throw new UnauthorizedException(); // 인증 실패
-    }
-    return user; // 성공 시 사용자 객체 반환
-  }
-}
+export class LocalAuthGuard extends AuthGuard('local') {}

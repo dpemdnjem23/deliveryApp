@@ -5,7 +5,6 @@ import { Users } from 'src/entities/Users.entity';
 import { Repository } from 'typeorm';
 import bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
-import { JwtPayload } from 'jsonwebtoken';
 import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
@@ -17,18 +16,39 @@ export class AuthService {
   ) {}
 
   generateAccessToken(payload: object): string {
-    return this.jwtService.sign({ payload }, { expiresIn: '15m' }); // 15분 유효기간
+    return this.jwtService.sign(
+      { payload },
+      { secret: process.env.JWT_SECRET, expiresIn: '1d' },
+    ); // 15분 유효기간
   }
 
   // RefreshToken 생성
   generateRefreshToken(payload: object): string {
-    return this.jwtService.sign({ payload }, { expiresIn: '7d' }); // 7일 유효기간
+    return this.jwtService.sign(
+      { payload },
+      { secret: process.env.JWT_SECRET, expiresIn: '7d' },
+    ); // 7일 유효기간
   }
 
-  verifyToken(token: string): any {
-    return this.jwtService.verify(token, {
-      secret: process.env.JWT_SECRET || 'yourSecretKey',
-    });
+  verifyToken(token: string): Promise<any> {
+    if (!process.env.JWT_SECRET) {
+      throw new Error('JWT_SECRET is not defined in environment variables');
+    }
+
+    if (!token) {
+      throw new UnauthorizedException('Token not provided');
+    }
+
+    try {
+      console.log(process.env.JWT_SECRET, token, 'payload직전');
+      const payload = this.jwtService.verify(token, {
+        secret: process.env.JWT_SECRET,
+      });
+
+      return payload;
+    } catch (err) {
+      throw new UnauthorizedException('invalid payload');
+    }
   }
   //아직 로그인하기 전,
 
@@ -63,7 +83,6 @@ export class AuthService {
     if (!user || !isPasswordValid) {
       return new UnauthorizedException('Invalid password or email');
     }
-    console.log('auth service 통과');
     //여기서 이메일 인증 + 비밀번호 인증까지 한다.
 
     return { id: user.id, email: user.email, nickname: user.nickname };

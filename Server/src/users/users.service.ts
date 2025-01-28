@@ -36,7 +36,7 @@ export class UsersService {
     console.log(email);
     return await this.userRepository.findOne({
       where: { email },
-      select: ['id', 'email', 'password'],
+      select: ['id', 'email', 'password', 'nickname'],
     });
   }
 
@@ -53,21 +53,14 @@ export class UsersService {
 
     //hahspassword 가 된 상태에서, 해석을해서 일치한지 확인.
     const accessToken = this.authService.generateAccessToken(payload);
-    const refreshToken = this.authService.generateRefreshToken(payload);
 
-    res.cookie('refreshToken', refreshToken, {
-      httpOnly: true, // 클라이언트에서 접근 불가
-      secure: false, // HTTPS 환경에서만 전송
-      sameSite: 'lax', // CSRF 방지
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 쿠키 유효기간: 7일
-    });
-    return res.status(200).json({
+    return {
       data: {
         id,
         email: email,
         nickname: nickname,
       },
       accessToken: accessToken,
-    });
+    };
   }
 }
