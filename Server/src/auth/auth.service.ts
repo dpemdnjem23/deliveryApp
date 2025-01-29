@@ -40,7 +40,6 @@ export class AuthService {
     }
 
     try {
-      console.log(process.env.JWT_SECRET, token, 'payload직전');
       const payload = this.jwtService.verify(token, {
         secret: process.env.JWT_SECRET,
       });
@@ -72,6 +71,7 @@ export class AuthService {
       where: { email },
       select: ['id', 'email', 'password', 'nickname'],
     });
+    console.log(user, 'validateUser');
     //emaill 자체가 존재x
 
     //비밀번호 일치 확인

@@ -9,7 +9,13 @@ import {
   ForbiddenException,
   Res,
   Request,
+  InternalServerErrorException,
+  Delete,
+  Param,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
+
 import { UsersService } from './users.service';
 import {
   ApiCookieAuth,
@@ -47,10 +53,16 @@ export class UsersController {
   @ApiOperation({ summary: '내 정보 조회' })
   @UseGuards(JwtAuthGuard)
   @Get()
-  async getUser(@Request() req: any, @Res() res: any, @User() data: any) {
-    // const s = this.userService.findUserByEmail();
-
-    return { message: 'This is protected data' };
+  async getUser(@User() req: any) {
+    try {
+      const user = await this.userService.findUserByEmail(req.payload.email);
+      delete user.password;
+      console.log(user);
+      return user; // 정상적으로 응답 보내기
+    } catch (error) {
+      console.error(error);
+      throw new InternalServerErrorException('서버 오류가 발생했습니다.');
+    }
   }
 
   //로그인 하는 경우 jwtToken을 생성해서 넘겨줘야하ㅏㄴㄷ.
@@ -74,26 +86,38 @@ export class UsersController {
   }
 
   @ApiOperation({ summary: '회원가입' })
-  @UseGuards(NotLoggedInGuard)
+  // @UseGuards(NotLoggedInGuard)
   @Post('signup')
   async register(@Body() body: JoinRequestDto) {
-    const existingUser = await this.userService.findUserByEmail(body.email);
+    const { email, password, nickname } = body;
+    console.log(email);
+    const existingUser = await this.userService.findUserByEmail(email);
 
     if (existingUser) {
       throw new BadRequestException('Email already in use');
     }
     const result = await this.userService.registerUser(
-      body.email,
-      body.nickname,
-      body.password,
+      email,
+      nickname,
+      password,
     );
-    if (result) {
-      return 'ok';
-    } else {
+    if (!result) {
       throw new ForbiddenException();
     }
   }
+
   //로그아웃
 
   ///회원탈퇴
+  // @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    summary: '회원탈퇴',
+    description: '현재 로그인한 사용자의 계정을 삭제합니다.',
+  })
+  @ApiResponse({ status: 204, description: '회원탈퇴 성공' })
+  @Delete(':id')
+  async delUser(@Param('id') id: number) {
+    console.log(id);
+    return await this.userService.deleteUser(id);
+  }
 }

@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DataSource } from 'typeorm';
 import { Response } from 'express';
@@ -13,9 +17,6 @@ export class UsersService {
     @InjectRepository(Users)
     private userRepository: Repository<Users>,
     private authService: AuthService,
-
-    private dataSource: DataSource,
-    private jwtService: JwtService,
   ) {}
 
   //회원가입하기
@@ -25,6 +26,7 @@ export class UsersService {
     nickname: string,
   ): Promise<Users> {
     const hashedPassword = await bcrypt.hash(password, 10);
+
     const user = this.userRepository.create({
       email,
       password: hashedPassword,
@@ -33,7 +35,6 @@ export class UsersService {
     return await this.userRepository.save(user);
   }
   async findUserByEmail(email: string): Promise<Users | undefined> {
-    console.log(email);
     return await this.userRepository.findOne({
       where: { email },
       select: ['id', 'email', 'password', 'nickname'],
@@ -62,5 +63,22 @@ export class UsersService {
       },
       accessToken: accessToken,
     };
+  }
+  //유저 아이디 변경
+
+  // 회원탈퇴
+  async deleteUser(id: number): Promise<void> {
+    const user = await this.userRepository.findOne({
+      where: { id },
+      select: ['id', 'email', 'nickname'],
+    });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    console.log(id);
+
+    await this.userRepository.delete(id);
+
+    // await this.cleanUpUserData(id);
   }
 }

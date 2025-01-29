@@ -4,7 +4,7 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { AuthService } from '../auth.service';
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy) {
+export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   constructor(private authService: AuthService) {
     console.log('JwtStrategy initialized');
     super({
@@ -15,8 +15,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   // 토큰을 생성, 검증
-  validate(payload: any) {
-    console.log(payload);
+  async validate(payload: any) {
+    console.log(payload, 'payload validate');
     return { payload };
   }
 }
