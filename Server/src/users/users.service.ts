@@ -81,4 +81,8 @@ export class UsersService {
 
     // await this.cleanUpUserData(id);
   }
+  async signout(user: any): Promise<void> {
+    const token = user.token;
+    const decodedToken: any = this.authService.verifyToken(user.token);
+  }
 }

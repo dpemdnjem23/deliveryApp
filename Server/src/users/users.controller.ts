@@ -35,6 +35,7 @@ import { LoggedInGuard } from 'src/auth/guards/logged-in.guard';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { Response } from 'express';
 import { AuthService } from 'src/auth/auth.service';
+import { ClearCookie } from 'src/common/decorators/clearCookie.decorator';
 @UseInterceptors(UndefinedToNullInterceptor)
 @ApiTags('USER')
 @Controller('api/users')
@@ -107,6 +108,16 @@ export class UsersController {
   }
 
   //로그아웃
+  @ApiOperation({ summary: '로그아웃' })
+  @UseGuards(JwtAuthGuard)
+  @ApiResponse({ status: 200, description: '로그아웃 성공' })
+  @Get('signout')
+  async logout(
+    @Request() req: Request,
+    @ClearCookie('refreshToken') clearCookie,
+  ) {
+    return { message: 'Successfully logged out' };
+  }
 
   ///회원탈퇴
   // @UseGuards(JwtAuthGuard)
