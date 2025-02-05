@@ -1,4 +1,4 @@
-import React, {useCallback, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -12,16 +12,16 @@ import {
 import * as SecureStore from 'expo-secure-store';
 import Constants from 'expo-constants';
 
-import EncryptedStorage from 'react-native-encrypted-storage';
 import axios, {AxiosError} from 'axios';
-import {useRouter} from 'expo-router';
+import {usePathname, useRouter} from 'expo-router';
 import {useAppDispatch} from './(store)';
 import userSlice from './(slices)/user';
-import DismissKeyboardView from './components/DismissKeyboardView';
+import DismissKeyboardView from '../components/DismissKeyboardView';
+import commonFunction from '@/components/commonFunction';
 
 function SignIn() {
-  const API_URL = Constants.manifest2?.extra?.API_URL;
-
+  // const API_URL = Constants.manifest2?.extra;
+  const pathname = usePathname();
   const router = useRouter();
   const dispatch = useAppDispatch();
   const [loading, setLoading] = useState(false);
@@ -29,7 +29,26 @@ function SignIn() {
   const [password, setPassword] = useState('');
   const emailRef = useRef<TextInput | null>(null);
   const passwordRef = useRef<TextInput | null>(null);
+  // console.log(accessToken, 'accesstoken');
+  useEffect(() => {
+    const token = async () => {
+      const accessToken = await commonFunction.getAccessToken();
 
+      let isMounted = true;
+      console.debug(accessToken, pathname, isMounted);
+
+      if (accessToken && pathname !== '/Home' && isMounted) {
+        console.debug('dhodhktsl');
+        router.replace('/Home');
+      }
+      console.debug('여기도달');
+
+      return () => {
+        isMounted = false;
+      };
+    };
+    token();
+  }, []);
   const onChangeEmail = useCallback((text: string) => {
     setEmail(text.trim());
   }, []);
@@ -48,11 +67,10 @@ function SignIn() {
     }
     try {
       setLoading(true);
-      console.log(
+      console.debug(
         Platform.OS !== 'web'
           ? process.env.EXPO_PUBLIC_API_URL
           : process.env.EXPO_PUBLIC_WEB_API_URL,
-        API_URL,
       );
       const response = await axios.post(
         `${
@@ -66,7 +84,10 @@ function SignIn() {
         },
       );
 
-      console.log(response.data, response.status);
+      if (!response) {
+        console.error(response);
+      }
+
       Alert.alert('알림', '로그인 되었습니다.');
       dispatch(
         userSlice.actions.setUser({
@@ -77,9 +98,15 @@ function SignIn() {
         }),
       );
       await SecureStore.setItemAsync(
-        'refreshToken',
-        response.data.data.refreshToken,
+        'user',
+        JSON.stringify(response.data.data),
       );
+
+      await SecureStore.setItemAsync(
+        'accessToken',
+        JSON.stringify(response.data.accessToken),
+      );
+      router.push('/Home');
     } catch (error) {
       const errorResponse = error as AxiosError<unknown, any>;
       console.debug(errorResponse);

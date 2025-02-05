@@ -10,7 +10,12 @@ async function bootstrap() {
     logger: ['log', 'error', 'warn', 'debug'],
   });
   app.use(cookieParser()); // 쿠키 파서 미들웨어 추가
-
+  app.enableCors({
+    origin: '*', // 모든 도메인 허용 (프로덕션에서는 특정 도메인만 허용하세요)
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS', // 허용할 HTTP 메서드
+    allowedHeaders: 'Content-Type, Authorization', // 허용할 헤더
+    credentials: true, // 쿠키 허용 (필요한 경우)
+  });
   const config = new DocumentBuilder()
     .setTitle('Delivery')
     .setDescription('The Delivery API description')

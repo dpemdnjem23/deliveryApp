@@ -78,7 +78,8 @@ export class AuthService {
     //암호화를하고.
     const hashedPassword = await bcrypt.hash(password, 10);
     //암호화 한거와 저장돼있는 비밀번호 비교
-    const isPasswordValid = await bcrypt.compare(user.password, hashedPassword);
+    const isPasswordValid = await bcrypt.compare(password, hashedPassword);
+    console.log(hashedPassword, isPasswordValid, user.password, password);
 
     if (!user || !isPasswordValid) {
       return new UnauthorizedException('Invalid password or email');

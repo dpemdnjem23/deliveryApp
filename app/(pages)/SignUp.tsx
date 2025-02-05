@@ -14,7 +14,7 @@ import {useRouter} from 'expo-router';
 
 import axios from 'axios';
 import Config from 'react-native-config';
-import DismissKeyboardView from '../components/DismissKeyboardView';
+import DismissKeyboardView from '../../components/DismissKeyboardView';
 
 function SignUp() {
   const router = useRouter();

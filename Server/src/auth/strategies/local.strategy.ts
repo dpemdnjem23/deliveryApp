@@ -10,10 +10,10 @@ export class LocalStrategy extends PassportStrategy(Strategy, 'local') {
   }
   //여기서 인증 절차를 거쳐야한다.
   async validate(email: string, password: string): Promise<any> {
-    console.log(email, password, 'sdfasdf');
+    console.log(email, password, 'localstrategy');
     const user = await this.authService.validateUser(email, password);
 
-    console.log(user, 'user');
+    console.log(user, 'localstrategy user');
     if (!user) {
       throw new UnauthorizedException('user expired');
     }

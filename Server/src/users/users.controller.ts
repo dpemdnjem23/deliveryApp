@@ -71,6 +71,7 @@ export class UsersController {
   // @UseGuards(LoggedInGuard)
   @UseGuards(LocalAuthGuard)
   // @UseGuards(JwtAuthGuard)
+  @HttpCode(200) // 응답 코드를 200으로 변경
   @Post('signin')
   async login(@User() user: any, @Res({ passthrough: true }) res: Response) {
     const data = await this.userService.signIn(user, res);
@@ -88,6 +89,7 @@ export class UsersController {
 
   @ApiOperation({ summary: '회원가입' })
   // @UseGuards(NotLoggedInGuard)
+  @ApiResponse({ status: 200, description: '로그아웃 성공' })
   @Post('signup')
   async register(@Body() body: JoinRequestDto) {
     const { email, password, nickname } = body;
@@ -99,8 +101,9 @@ export class UsersController {
     }
     const result = await this.userService.registerUser(
       email,
-      nickname,
+
       password,
+      nickname,
     );
     if (!result) {
       throw new ForbiddenException();
@@ -114,7 +117,7 @@ export class UsersController {
   @Get('signout')
   async logout(
     @Request() req: Request,
-    @ClearCookie('refreshToken') clearCookie,
+    @ClearCookie('refreshToken') clearCookie: any,
   ) {
     return { message: 'Successfully logged out' };
   }
