@@ -18,10 +18,9 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     const authHeader = request.headers['authorization'];
     const [, token] = authHeader.split(' ');
 
-    //accessToken인경우
-    this.authService.verifyToken(token);
     //refreshtoken인경우
-    //여기는 인가다. 맞으면 user를 내보내고 틀리면 빠꾸
+
+    this.authService.verifyRefreshToken(token);
 
     return user; // request.user에 저장될 데이터
   }

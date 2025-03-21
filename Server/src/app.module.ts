@@ -14,13 +14,12 @@ import { JwtModule } from '@nestjs/jwt';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { APP_GUARD } from '@nestjs/core';
 import { UsersService } from './users/users.service';
+import { OrdersController } from './orders/orders.controller';
+import { OrdersService } from './orders/orders.service';
+import { OrdersModule } from './orders/orders.module';
 
 @Module({
   imports: [
-    JwtModule.register({
-      secret: process.env.JWT_SECRET || 'defaultSecret',
-      signOptions: { expiresIn: '1h' },
-    }),
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
@@ -40,19 +39,21 @@ import { UsersService } from './users/users.service';
 
         migrations: [__dirname + '/migrations/*.ts'],
         autoLoadEntities: true,
-        synchronize: false,
+        synchronize: true,
         logging: true,
         timezone: 'local',
       }),
     }),
     UsersModule,
     AuthModule,
+    OrdersModule,
   ],
-  controllers: [AppController],
+  controllers: [AppController, OrdersController],
   providers: [
     AppService,
     UsersService,
     AuthService,
+    OrdersService,
     // { provide: APP_GUARD, useClass: JwtAuthGuard },
   ],
 })

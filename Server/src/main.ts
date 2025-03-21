@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import cookieParser from 'cookie-parser'; // ES6 방식 import
+import { IoAdapter } from '@nestjs/platform-socket.io';
 
 import { AppModule } from './app.module';
 declare const module: any;
@@ -9,6 +10,8 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     logger: ['log', 'error', 'warn', 'debug'],
   });
+  app.useWebSocketAdapter(new IoAdapter(app));
+
   app.use(cookieParser()); // 쿠키 파서 미들웨어 추가
   app.enableCors({
     origin: '*', // 모든 도메인 허용 (프로덕션에서는 특정 도메인만 허용하세요)

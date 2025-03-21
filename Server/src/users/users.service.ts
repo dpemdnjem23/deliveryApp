@@ -11,12 +11,16 @@ import bcrypt from 'bcrypt';
 import { Users } from '../entities/Users.entity';
 import { JwtService } from '@nestjs/jwt';
 import { AuthService } from 'src/auth/auth.service';
+
+export const blacklistedTokens = new Set<string>(); // 블랙리스트 저장소
+
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(Users)
     private userRepository: Repository<Users>,
     private authService: AuthService,
+    private jwtService: JwtService,
   ) {}
 
   //회원가입하기
@@ -54,6 +58,7 @@ export class UsersService {
 
     //hahspassword 가 된 상태에서, 해석을해서 일치한지 확인.
     const accessToken = this.authService.generateAccessToken(payload);
+    const refreshToken = this.authService.generateRefreshToken(payload);
 
     return {
       data: {
@@ -62,6 +67,7 @@ export class UsersService {
         nickname: nickname,
       },
       accessToken: accessToken,
+      refreshToken: refreshToken,
     };
   }
   //유저 아이디 변경
@@ -81,8 +87,9 @@ export class UsersService {
 
     // await this.cleanUpUserData(id);
   }
-  async signout(user: any): Promise<void> {
-    const token = user.token;
-    const decodedToken: any = this.authService.verifyToken(user.token);
+
+  //로그아웃
+  async signOutUser(token: string): Promise<void> {
+    blacklistedTokens.add(token); // accessToken도 블랙리스트 처리
   }
 }

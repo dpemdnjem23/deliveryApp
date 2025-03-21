@@ -5,7 +5,10 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
   DeleteDateColumn,
+  OneToOne,
+  JoinColumn,
 } from 'typeorm';
+import { Orders } from './Orders.entity';
 
 // @Index('email', ['email'], { unique: true })
 @Entity({
@@ -31,6 +34,6 @@ export class Users {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @DeleteDateColumn()
-  deletedAt: Date | null;
+  @OneToOne(() => Orders, (order) => order.user) // specify inverse side as a second parameter
+  order: Orders;
 }

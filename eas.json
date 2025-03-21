@@ -1,0 +1,27 @@
+{
+  "cli": {
+    "version": ">= 15.0.14",
+    "appVersionSource": "remote"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "android": {
+        "developmentClient": true,
+
+        "gradleCommand": ":app:assembleDebug"
+      }
+    },
+    "preview": {
+      "distribution": "internal"
+    },
+    "production": {
+      "autoIncrement": true,
+      "distribution": "store"
+    }
+  },
+  "submit": {
+    "production": {}
+  }
+}

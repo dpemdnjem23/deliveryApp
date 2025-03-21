@@ -11,13 +11,16 @@ import {
 } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import Constants from 'expo-constants';
-
+import * as FileSystem from 'expo-file-system';
 import axios, {AxiosError} from 'axios';
-import {usePathname, useRouter} from 'expo-router';
-import {useAppDispatch} from './(store)';
-import userSlice from './(slices)/user';
-import DismissKeyboardView from '../components/DismissKeyboardView';
+import {SplashScreen, usePathname, useRouter} from 'expo-router';
+import {useAppDispatch} from '../(store)';
+import userSlice, {setIsLoggedIn} from '../(slices)/user';
+import DismissKeyboardView from '../../components/DismissKeyboardView';
 import commonFunction from '@/components/commonFunction';
+import Config from 'react-native-config';
+import useSocket from '@/hooks/useSocket';
+SplashScreen.preventAutoHideAsync();
 
 function SignIn() {
   // const API_URL = Constants.manifest2?.extra;
@@ -29,26 +32,28 @@ function SignIn() {
   const [password, setPassword] = useState('');
   const emailRef = useRef<TextInput | null>(null);
   const passwordRef = useRef<TextInput | null>(null);
+  // const [socket, disconnect] = useSocket();
+
+  // console.log(FileSystem.documentDirectory);
+
   // console.log(accessToken, 'accesstoken');
-  useEffect(() => {
-    const token = async () => {
-      const accessToken = await commonFunction.getAccessToken();
 
-      let isMounted = true;
-      console.debug(accessToken, pathname, isMounted);
+  // useEffect(() => {
+  //   const callback = (data: any) => {
+  //     console.log(data);
+  //     // dispatch(orderSlice.actions.addOrder(data));
+  //   };
+  //   if (socket && isLoggedIn) {
+  //     socket.emit('acceptOrder', 'hello');
+  //     socket.on('order', callback);
+  //   }
+  //   return () => {
+  //     if (socket) {
+  //       socket.off('order', callback);
+  //     }
+  //   };
+  // });
 
-      if (accessToken && pathname !== '/Home' && isMounted) {
-        console.debug('dhodhktsl');
-        router.replace('/Home');
-      }
-      console.debug('여기도달');
-
-      return () => {
-        isMounted = false;
-      };
-    };
-    token();
-  }, []);
   const onChangeEmail = useCallback((text: string) => {
     setEmail(text.trim());
   }, []);
@@ -89,14 +94,16 @@ function SignIn() {
       }
 
       Alert.alert('알림', '로그인 되었습니다.');
-      dispatch(
-        userSlice.actions.setUser({
-          name: response.data.data.name,
-          email: response.data.data.email,
-          accessToken: response.data.data.accessToken,
-          refreshToken: response.data.data.refreshToken,
-        }),
-      );
+      // dispatch(
+      //   userSlice.actions.setUser({
+      //     name: response.data.data.name,
+      //     email: response.data.data.email,
+      //     accessToken: response.data.data.accessToken,
+      //     refreshToken: response.data.data.refreshToken,
+      //   }),
+      // );
+
+      dispatch(setIsLoggedIn(true));
       await SecureStore.setItemAsync(
         'user',
         JSON.stringify(response.data.data),
@@ -106,7 +113,11 @@ function SignIn() {
         'accessToken',
         JSON.stringify(response.data.accessToken),
       );
-      router.push('/Home');
+      await SecureStore.setItemAsync(
+        'refreshToken',
+        JSON.stringify(response.data.refreshToken),
+      );
+      router.push('/(Tabs)');
     } catch (error) {
       const errorResponse = error as AxiosError<unknown, any>;
       console.debug(errorResponse);
@@ -119,7 +130,7 @@ function SignIn() {
   }, [loading, dispatch, email, password]);
 
   const toSignUp = useCallback(() => {
-    router.push('/SignUp');
+    router.push('/auth/SignUp');
   }, [router]);
 
   const canGoNext = email && password;

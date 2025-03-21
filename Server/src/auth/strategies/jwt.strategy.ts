@@ -6,17 +6,18 @@ import { AuthService } from '../auth.service';
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   constructor(private authService: AuthService) {
-    console.log('JwtStrategy initialized');
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: process.env.JWT_SECRET || 'secretKey', // .env 파일 사용 가능
+      secretOrKey: process.env.JWT_SECRET, // .env 파일 사용 가능
     });
   }
 
-  // 토큰을 생성, 검증
+  //검증된 토큰을 자동으로 payload로 반환해준다.
   async validate(payload: any) {
-    console.log(payload, 'payload validate');
-    return { payload };
+    // console.log(token, 'jwtpayload');
+    return payload;
+    // const verfiy = this.authService.verifyRefreshToken(payload);
+    // return { payload };
   }
 }

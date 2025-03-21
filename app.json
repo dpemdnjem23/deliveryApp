@@ -1,42 +1,77 @@
 {
   "expo": {
+    "doctor": {
+      "reactNativeDirectoryCheck": {
+        "exclude": ["@mj-studio/react-native-naver-map", "socket.io-client"],
+        "listUnknownPackages": false
+      }
+    },
     "name": "FoodDelivery",
     "slug": "FoodDelivery",
     "version": "1.0.0",
+    "scheme": "myapp",
+    "sdkVersion": "52.0.0",
+    "updates": {
+      "enabled": true
+    },
     "jsEngine": "hermes",
-
     "newArchEnabled": true,
     "orientation": "portrait",
+    "userInterfaceStyle": "automatic"
+  },
+  "splash": {
+    "image": "./assets/images/배달을하고싶다면.png",
+    "resizeMode": "contain",
+    "backgroundColor": "#ffffff"
+  },
+  "ios": {
     "icon": "./assets/images/icon.png",
-    "scheme": "myapp",
-    "userInterfaceStyle": "automatic",
-    "extra": {
-      "API_URL": "exp://192.168.0.7:3000"
-    },
-    "splash": {
-      "image": "./assets/images/splash.png",
-      "resizeMode": "contain",
+    "supportsTablet": true,
+    "bundleIdentifier": "com.mycompany.fooddelivery"
+  },
+  "android": {
+    "adaptiveIcon": {
+      "foregroundImage": "./assets/images/adaptive-icon.png",
       "backgroundColor": "#ffffff"
     },
-    "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.tabtab.hello"
-    },
-    "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
-      },
-      "package": "com.tabtab.hello"
-    },
-    "web": {
-      "bundler": "metro",
-      "output": "static",
-      "favicon": "./assets/images/favicon.png"
-    },
-    "plugins": ["expo-router", "expo-secure-store"],
-    "experiments": {
-      "typedRoutes": true
-    }
-  }
+    "package": "com.mycompany.fooddelivery",
+    "permissions": [
+      "android.permission.CAMERA",
+      "android.permission.RECORD_AUDIO"
+    ]
+  },
+  "web": {
+    "bundler": "metro",
+    "output": "static",
+    "favicon": "./assets/images/favicon.png"
+  },
+  "plugins": [
+    "expo-dev-client",
+    [
+      "@mj-studio/react-native-naver-map",
+      {
+        "client_id": "3d0iv5ye20",
+        "android": {
+          "ACCESS_FINE_LOCATION": true,
+          "ACCESS_COARSE_LOCATION": true,
+          "ACCESS_BACKGROUND_LOCATION": true
+        }
+      }
+    ],
+    "expo-router",
+    "expo-secure-store",
+    [
+      "expo-camera",
+      {
+        "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera",
+        "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone",
+        "recordAudioAndroid": true
+      }
+    ],
+    "expo-build-properties"
+  ],
+  "experiments": {
+    "typedRoutes": true
+  },
+  "owner": "dpemdnjem23"
 }

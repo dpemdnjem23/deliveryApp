@@ -1,17 +1,26 @@
 import {useEffect} from 'react';
-import {Alert, Linking, Platform} from 'react-native';
+import {Alert, Linking, Platform, View} from 'react-native';
 
-import {check, PERMISSIONS, request, RESULTS} from 'react-native-permissions';
+import * as Permissions from 'expo-permissions';
+import * as Location from 'expo-location';
+import {
+  CameraView,
+  CameraType,
+  useCameraPermissions,
+  Camera,
+} from 'expo-camera';
 
 function usePermissions() {
   //권한
 
   useEffect(() => {
-    if (Platform.OS === 'android') {
-      check(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION)
-        .then(result => {
-          console.debug('check location', result);
-          if (result === RESULTS.BLOCKED || result === RESULTS.DENIED) {
+    const checkAndRequestLocationPermission = async () => {
+      try {
+        if (Platform.OS === 'android') {
+          const {status} = await Location.getForegroundPermissionsAsync();
+
+          console.debug(status);
+          if (status === 'denied') {
             Alert.alert(
               '이 앱은 위치권한 허용이 필요합니다',
               '앱 설정 화면을 열어서 항상 허용으로 바꿔주세요.',
@@ -27,59 +36,34 @@ function usePermissions() {
                 },
               ],
             );
+          } else if (status !== 'granted') {
+            const {status: newStatus} =
+              await Location.requestForegroundPermissionsAsync();
+            console.debug('Requested location permission status:', newStatus);
           }
-        })
-        .catch(console.error);
-    } else if (Platform.OS === 'ios') {
-      check(PERMISSIONS.IOS.LOCATION_ALWAYS)
-        .then(result => {
-          if (result === RESULTS.BLOCKED || result === RESULTS.DENIED) {
-            Alert.alert(
-              '이 앱은 백그라운드 위치 권한 허용이 필요합니다.',
-              '앱 설정 화면을 열어서 항상 허용으로 바꿔주세요.',
-              [
-                {
-                  text: '네',
-                  onPress: () => Linking.openSettings(),
-                },
-                {
-                  text: '아니오',
-                  onPress: () => console.log('No Pressed'),
-                  style: 'cancel',
-                },
-              ],
-            );
-          }
-        })
-        .catch(console.error);
-    }
-    if (Platform.OS === 'android') {
-      check(PERMISSIONS.ANDROID.CAMERA)
-        .then(result => {
-          if (result === RESULTS.DENIED || result === RESULTS.GRANTED) {
-            return request(PERMISSIONS.ANDROID.CAMERA);
+        }
+        if (Platform.OS === 'android') {
+          const {status} = await Camera.getCameraPermissionsAsync();
+          //   if (!permission) {
+          //     return;
+          //   }
+          // 권한이 거부되었을때.
+
+          console.debug(status, 'camera permission');
+
+          if (status === 'granted' || status === 'denied') {
+            console.debug('카메라 권한요청');
           } else {
-            console.debug(result);
-            throw new Error('카메라 지원 안함');
-          }
-        })
-        .catch(console.error);
-    } else {
-      check(PERMISSIONS.IOS.CAMERA)
-        .then(result => {
-          if (
-            result === RESULTS.DENIED ||
-            result === RESULTS.LIMITED ||
-            result === RESULTS.GRANTED
-          ) {
-            return request(PERMISSIONS.IOS.CAMERA);
-          } else {
-            console.log(result);
+            console.debug(status);
             throw new Error('카메라 지원 안 함');
           }
-        })
-        .catch(console.error);
-    }
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    checkAndRequestLocationPermission();
   }, []);
 }
 export default usePermissions;

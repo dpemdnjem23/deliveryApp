@@ -14,6 +14,7 @@ import {
   Param,
   HttpCode,
   HttpStatus,
+  UseFilters,
 } from '@nestjs/common';
 
 import { UsersService } from './users.service';
@@ -36,6 +37,9 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { Response } from 'express';
 import { AuthService } from 'src/auth/auth.service';
 import { ClearCookie } from 'src/common/decorators/clearCookie.decorator';
+import { GetBearerToken } from 'src/common/decorators/getToken.decorator';
+import { JwtBlacklistGuard } from 'src/auth/guards/jwt-blacklist.guard';
+
 @UseInterceptors(UndefinedToNullInterceptor)
 @ApiTags('USER')
 @Controller('api/users')
@@ -75,14 +79,7 @@ export class UsersController {
   @Post('signin')
   async login(@User() user: any, @Res({ passthrough: true }) res: Response) {
     const data = await this.userService.signIn(user, res);
-    const refreshToken = this.authService.generateRefreshToken(user);
 
-    res.cookie('refreshToken', refreshToken, {
-      httpOnly: true, // 클라이언트에서 접근 불가
-      secure: false, // HTTPS 환경에서만 전송
-      sameSite: 'lax', // CSRF 방지
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 쿠키 유효기간: 7일
-    });
     console.log(data, 'data');
     return data;
   }
@@ -113,13 +110,30 @@ export class UsersController {
   //로그아웃
   @ApiOperation({ summary: '로그아웃' })
   @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtBlacklistGuard)
   @ApiResponse({ status: 200, description: '로그아웃 성공' })
   @Get('signout')
-  async logout(
-    @Request() req: Request,
-    @ClearCookie('refreshToken') clearCookie: any,
-  ) {
+  async logout(@GetBearerToken() token: string) {
+    await this.userService.signOutUser(token);
     return { message: 'Successfully logged out' };
+  }
+  @ApiOperation({
+    summary: '토큰 으로 로그인',
+    description: '토큰이 만료되지 않앗다면 다시 로그인한다.',
+  })
+  @ApiResponse({ status: 200, description: '재발급 성공' })
+  @ApiResponse({ status: 419, description: 'expired' })
+  @HttpCode(200)
+  @Post('refresh')
+  async refreshToken(@GetBearerToken() token: string) {
+    try {
+      const data = await this.authService.refreshAccessToken(token);
+
+      console.log(data);
+      return data;
+    } catch (err) {
+      throw err;
+    }
   }
 
   ///회원탈퇴
