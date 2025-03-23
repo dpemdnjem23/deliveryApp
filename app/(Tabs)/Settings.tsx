@@ -10,7 +10,6 @@ import {
   Dimensions,
   ViewStyle,
 } from 'react-native';
-import * as Location from 'expo-location';
 
 import {useSelector, useDispatch} from 'react-redux';
 import {RootState} from '../(store)/reducer';
@@ -19,15 +18,36 @@ import {setIsLoggedIn, setMoney} from '../(slices)/user';
 import orderSlice, {Order} from '../(slices)/order';
 import * as SecureStore from 'expo-secure-store';
 import {Image} from 'expo-image';
-import {NaverMapView} from '@mj-studio/react-native-naver-map';
-import {NaverMapMarkerOverlay} from '../../node_modules/@mj-studio/react-native-naver-map/lib/module/component/NaverMapMarkerOverlay';
+import {
+  NaverMapView,
+  NaverMapMarkerOverlay,
+} from '@mj-studio/react-native-naver-map';
+
+import * as Location from 'expo-location';
+
 function Settings() {
   const accessToken = commonFunction.getAccessToken();
   const completes = useSelector((state: RootState) => state.order.completes);
   const money = useSelector((state: RootState) => state.user.money);
   const name = useSelector((state: RootState) => state.user.name);
   const dispatch = useDispatch();
-  const [location, setLocation] = React.useState({});
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const {granted} = await Location.requestForegroundPermissionsAsync();
+        /**
+         * Note: Foreground permissions should be granted before asking for the background permissions
+         * (your app can't obtain background permission without foreground permission).
+         */
+        if (granted) {
+          await Location.requestBackgroundPermissionsAsync();
+        }
+      } catch (e) {
+        console.error(`Location request has been failed: ${e}`);
+      }
+    })();
+  }, []);
 
   useEffect(() => {
     async function getMoney() {
@@ -131,27 +151,22 @@ function Settings() {
         </Pressable>
       </View>
       <NaverMapView
-        // style={{flex: 1}} // 맵이 전체 화면을 차지하도록 설정
-        // showsIndoorMap={true} // 실내 지도 표시
-        region={{
+        style={{height: '100%'}}
+        isShowZoomControls
+        isShowLocationButton
+        isShowCompass={false}
+        isShowScaleBar
+        initialCamera={{
           latitude: 33.20530773,
           longitude: 126.14656715029,
-          latitudeDelta: 0.38,
-          longitudeDelta: 0.8,
+          zoom: 10,
+          tilt: 50,
         }}>
         <NaverMapMarkerOverlay
           latitude={33.3565607356}
           longitude={126.48599018}
           onTap={() => console.log(1)}
           anchor={{x: 0.5, y: 1}}
-          caption={{
-            key: '1',
-            text: 'hello',
-          }}
-          subCaption={{
-            key: '1234',
-            text: '123',
-          }}
           width={100}
           height={100}
         />

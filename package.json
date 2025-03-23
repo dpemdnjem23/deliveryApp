@@ -1,6 +1,18 @@
 {
   "name": "delivery",
   "main": "expo-router/entry",
+  "expo": {
+    "doctor": {
+      "reactNativeDirectoryCheck": {
+        "exclude": [
+          "@mj-studio/react-native-naver-map",
+          "socket.io-client",
+          "react-native-keyboard-aware-scroll-view"
+        ],
+        "listUnknownPackages": false
+      }
+    }
+  },
   "version": "1.0.0",
   "scripts": {
     "start": "expo start --dev-client",

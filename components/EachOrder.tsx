@@ -69,6 +69,8 @@ function EachOrder({item}: Props) {
     showDetail(prevState => !prevState);
   }, []);
 
+  console.debug(start, end);
+
   return (
     <View style={styles.orderContainer}>
       <Pressable onPress={toggleDetail} style={styles.info}>
@@ -98,7 +100,7 @@ function EachOrder({item}: Props) {
               style={{height: '100%'}}
               initialCamera={{
                 latitude: (start.latitude + end.latitude) / 2,
-                longitude: (start.longitude + end.latitude) / 2,
+                longitude: (start.longitude + end.longitude) / 2,
                 zoom: 10,
                 tilt: 50,
               }}
@@ -112,8 +114,8 @@ function EachOrder({item}: Props) {
                 width={15}
                 height={15}
                 isHidden={false}
-                globalZIndex={10000}
-                caption={{text: '시작'}}
+                globalZIndex={100000}
+                caption={{text: '출발', color: 'blue'}}
                 image={{symbol: 'blue'}}></NaverMapMarkerOverlay>
               <NaverMapPathOverlay
                 coords={[
@@ -123,13 +125,14 @@ function EachOrder({item}: Props) {
                 globalZIndex={10000}
                 zIndex={1000}
                 color="black"
-                width={50}></NaverMapPathOverlay>
+                width={5}></NaverMapPathOverlay>
               <NaverMapMarkerOverlay
                 latitude={end.latitude}
                 longitude={end.longitude}
                 tintColor="red"
-                width={100}
-                height={100}
+                width={15}
+                height={15}
+                caption={{text: '도착', color: 'red'}}
                 image={{symbol: 'red'}}></NaverMapMarkerOverlay>
             </NaverMapView>
           </View>

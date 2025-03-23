@@ -35,7 +35,7 @@ export class OrdersService {
     if (!order) {
       throw new BadRequestException('유효하지않은 주문');
     }
-    order.completdeAt = new Date();
+    order.completedAt = new Date();
   } //orders를 수락
   async acceptOrders(req): Promise<void> {
     const orders = this.orders;

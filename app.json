@@ -1,23 +1,29 @@
 {
   "expo": {
-    "doctor": {
-      "reactNativeDirectoryCheck": {
-        "exclude": ["@mj-studio/react-native-naver-map", "socket.io-client"],
-        "listUnknownPackages": false
-      }
-    },
     "name": "FoodDelivery",
     "slug": "FoodDelivery",
     "version": "1.0.0",
     "scheme": "myapp",
     "sdkVersion": "52.0.0",
+    "reactNativeNewArchitecture": true,
     "updates": {
       "enabled": true
     },
     "jsEngine": "hermes",
     "newArchEnabled": true,
     "orientation": "portrait",
-    "userInterfaceStyle": "automatic"
+    "userInterfaceStyle": "automatic",
+    "android": {
+      "package": "com.dpemdnjem23.FoodDelivery"
+    },
+    "ios": {
+      "bundleIdentifier": "com.dpemdnjem23.FoodDelivery"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "7d67057f-0ec5-4ada-a093-d00af6c5aad1"
+      }
+    }
   },
   "splash": {
     "image": "./assets/images/배달을하고싶다면.png",
@@ -27,14 +33,14 @@
   "ios": {
     "icon": "./assets/images/icon.png",
     "supportsTablet": true,
-    "bundleIdentifier": "com.mycompany.fooddelivery"
+    "bundleIdentifier": "com.dpemdnjem23.FoodDelivery"
   },
   "android": {
     "adaptiveIcon": {
       "foregroundImage": "./assets/images/adaptive-icon.png",
       "backgroundColor": "#ffffff"
     },
-    "package": "com.mycompany.fooddelivery",
+    "package": "com.dpemdnjem23.FoodDelivery",
     "permissions": [
       "android.permission.CAMERA",
       "android.permission.RECORD_AUDIO"
@@ -50,7 +56,7 @@
     [
       "@mj-studio/react-native-naver-map",
       {
-        "client_id": "3d0iv5ye20",
+        "ncp_key_id": "igrympr8z2",
         "android": {
           "ACCESS_FINE_LOCATION": true,
           "ACCESS_COARSE_LOCATION": true,
