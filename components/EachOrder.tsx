@@ -38,7 +38,7 @@ function EachOrder({item}: Props) {
     }
     try {
       await axios.post(
-        `${process.env.EXPO_PUBLIC_APU_URL}/api/orders/accept`,
+        `${process.env.EXPO_PUBLIC_API_URL}/api/orders/accept`,
         {
           orderId: item.orderId,
         },

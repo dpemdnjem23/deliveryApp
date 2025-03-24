@@ -39,6 +39,7 @@ export class OrdersService {
   } //orders를 수락
   async acceptOrders(req): Promise<void> {
     const orders = this.orders;
+    console.log(orders);
 
     const order = orders.find((v) => v.orderId === req.body.orderId);
 
