@@ -20,7 +20,12 @@ import usePermissions from '@/hooks/usePermissions';
 import {setIsLoggedIn} from './(slices)/user';
 import orderSlice from './(slices)/order';
 import {RootState} from '../node_modules/reselect/dist/reselect.d';
-
+export type LoggedInParamList = {
+  Orders: undefined;
+  Settings: undefined;
+  Delivery: undefined;
+  Complete: {orderId: string};
+};
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {

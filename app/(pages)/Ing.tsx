@@ -9,11 +9,10 @@ import {
   NaverMapView,
 } from '@mj-studio/react-native-naver-map';
 import TMap from '@/modules/TMap';
-import { * as Router } from 'expo-router';
-
-
+import {router, useRouter} from 'expo-router';
 
 function Ing() {
+  const router = useRouter();
   const deliveries = useSelector((state: RootState) => state.order.deliveries);
   const [myPosition, setMyPosition] = useState<{
     latitude: number;
@@ -152,8 +151,11 @@ function Ing() {
             caption={{text: '도착'}}
             image={require('@/assets/green-dot.png')}
             onTap={() => {
-              console.log(navigation);
-              navigation.push('Complete', {orderId: deliveries[0].orderId});
+              console.log(router);
+              router.push({
+                pathname: 'Complete',
+                params: {orderId: deliveries[0].orderId},
+              });
             }}></NaverMapMarkerOverlay>
         </NaverMapView>
       </View>

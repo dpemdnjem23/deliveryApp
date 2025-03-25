@@ -72,9 +72,9 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="Delivery"
+        name="Delivery/index"
         options={{
-          title: 'Delivery',
+          title: '배달',
           // headerShown: false,
           tabBarIcon: ({color}) => (
             <FontAwesome size={28} name="rocket" color={color} />
