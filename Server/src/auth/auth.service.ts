@@ -50,7 +50,7 @@ export class AuthService {
 
       return payload;
     } catch (err) {
-      console.error(err);
+      console.error(err, 'jwt auth service');
       //token이 만료된 경우
       if (err.name === 'TokenExpiredError') {
         throw new HttpException(err, 419);

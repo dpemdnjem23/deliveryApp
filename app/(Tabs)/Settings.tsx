@@ -31,24 +31,6 @@ function Settings() {
   const money = useSelector((state: RootState) => state.user.money);
   const name = useSelector((state: RootState) => state.user.name);
   const dispatch = useDispatch();
-
-  useEffect(() => {
-    (async () => {
-      try {
-        const {granted} = await Location.requestForegroundPermissionsAsync();
-        /**
-         * Note: Foreground permissions should be granted before asking for the background permissions
-         * (your app can't obtain background permission without foreground permission).
-         */
-        if (granted) {
-          await Location.requestBackgroundPermissionsAsync();
-        }
-      } catch (e) {
-        console.error(`Location request has been failed: ${e}`);
-      }
-    })();
-  }, []);
-
   useEffect(() => {
     async function getMoney() {
       const response = await axios.get<{data: number}>(
@@ -109,21 +91,6 @@ function Settings() {
     );
   }, []);
 
-  useEffect(() => {
-    async function getLocation() {
-      let {status} = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        alert('Permission to access location was denied');
-        return;
-      }
-
-      let location = await Location.getCurrentPositionAsync({});
-      setLocation(location.coords);
-    }
-
-    getLocation();
-  }, []);
-
   return (
     <View>
       <View style={styles.money}>
@@ -150,27 +117,6 @@ function Settings() {
           <Text style={styles.loginButtonText}>로그아웃</Text>
         </Pressable>
       </View>
-      <NaverMapView
-        style={{height: '100%'}}
-        isShowZoomControls
-        isShowLocationButton
-        isShowCompass={false}
-        isShowScaleBar
-        initialCamera={{
-          latitude: 33.20530773,
-          longitude: 126.14656715029,
-          zoom: 10,
-          tilt: 50,
-        }}>
-        <NaverMapMarkerOverlay
-          latitude={33.3565607356}
-          longitude={126.48599018}
-          onTap={() => console.log(1)}
-          anchor={{x: 0.5, y: 1}}
-          width={100}
-          height={100}
-        />
-      </NaverMapView>
     </View>
   );
 }

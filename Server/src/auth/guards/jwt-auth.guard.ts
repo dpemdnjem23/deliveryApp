@@ -17,6 +17,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
 
     const authHeader = request.headers['authorization'];
     const [, token] = authHeader.split(' ');
+    console.log(token, 'jwt auth guard token');
 
     //accessToken인경우
     this.authService.verifyToken(token);

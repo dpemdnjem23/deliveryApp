@@ -1,5 +1,5 @@
 import {useSelector} from 'react-redux';
-import {RootState} from '../(store)/reducer';
+import {RootState} from '../../(store)/reducer';
 import React, {useEffect, useState} from 'react';
 import * as Location from 'expo-location';
 import {View, Text, Dimensions, Alert} from 'react-native';
@@ -10,8 +10,10 @@ import {
 } from '@mj-studio/react-native-naver-map';
 import TMap from '@/modules/TMap';
 import {router, useRouter} from 'expo-router';
+import {NativeModules} from 'react-native';
 
 function Ing() {
+  console.debug(NativeModules, 'natives module Ing');
   const router = useRouter();
   const deliveries = useSelector((state: RootState) => state.order.deliveries);
   const [myPosition, setMyPosition] = useState<{
@@ -27,7 +29,7 @@ function Ing() {
         console.error('위치 권한이 거부되었습니다.');
         return;
       }
-
+      console.debug('이거 왜이렇게느림');
       // 현재 위치 가져오기
       let currentLocation = await Location.getCurrentPositionAsync({});
       console.log(currentLocation);
@@ -37,7 +39,10 @@ function Ing() {
       });
     })();
   }, []);
-  if (deliveries?.[0]) {
+
+  console.debug(deliveries, 'IngDeliverise', myPosition);
+
+  if (!deliveries?.[0]) {
     return (
       <View style={{alignItems: 'center', justifyContent: 'center', flex: 1}}>
         <Text>주문을 먼저 수락해주세요</Text>
@@ -153,8 +158,7 @@ function Ing() {
             onTap={() => {
               console.log(router);
               router.push({
-                pathname: 'Complete',
-                params: {orderId: deliveries[0].orderId},
+                pathname: `Complete/${deliveries[0].orderId}`,
               });
             }}></NaverMapMarkerOverlay>
         </NaverMapView>

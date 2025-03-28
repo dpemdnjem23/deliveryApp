@@ -1,6 +1,8 @@
 import {NativeModules} from 'react-native';
 const {TMap} = NativeModules;
 
+console.log('NativeModules:', NativeModules);
+
 interface TMapInterface {
   openNavi(
     name: string,
