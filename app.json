@@ -5,7 +5,6 @@
     "version": "1.0.0",
     "scheme": "myapp",
     "sdkVersion": "52.0.0",
-    "reactNativeNewArchitecture": true,
     "updates": {
       "enabled": true
     },
